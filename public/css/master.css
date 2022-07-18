@@ -1,0 +1,26 @@
+.ticketlist li {
+    display: grid;
+    grid-template-columns: 1fr 4fr 2fr 1fr 2fr 2fr 1fr 1fr;
+    grid-gap: 7px;
+    margin-bottom: 1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+.ticketlist .even {
+    background: lightblue;
+}
+
+.ticketlist .listtitle {
+    background: beige;
+    text-align: center;
+}
+.comment.depth {
+    margin-left: 15ch;
+}
+
+.comment {
+    padding: 2ch;
+    margin: 1em;
+    box-shadow: 1px 1px 11px 0px;
+}

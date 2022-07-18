@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Ticket #${ticketnid}</title>
+    <link rel="stylesheet" href="/css/master.css">
+  </head>
+  <body>
+    <h1>${title}</h1>
+    <div class="submitted">
+      von: ${name} am: ${pubdate}
+    </div>
+    <div class="tagswrapper">
+      <div class="tags">
+        ${tags}
+      </div>
+      <button type="button" name="button">edit tags</button>
+    </div>
+    <div class="body">
+      ${body}
+    </div>
+    <h2>Ticketbilder</h2>
+    <div class="imageswrapper">
+      ${images}
+    </div>
+    <h2>Dateien</h2>
+    <div class="fileswrapper">
+      ${files}
+    </div>
+    <!-- action tools here? i did not like it that way -->
+    <div class="actiontools">
+      <a href="#commentform">add new comment</a>
+      <button type="button" name="button">close ticket</button>
+    </div>
+    <h2>Kommentare</h2>
+    <ul class="commentlist">
+      <li class="comment">
+        <h3>${ctitle}</h3>
+        <div class="submitted">
+          von: ${cname} am: ${cpubdate}
+        </div>
+        <div class="body">
+          ${cbody}
+        </div>
+        <div class="images">
+          <h4>bilder:</h4>
+          ${cimages}
+        </div>
+        <div class="files">
+          <h4>dateien:</h4>
+          ${cfiles}
+        </div>
+      </li>
+    </ul>
+    <h2>Kommentar hinzufügen</h2>
+    <form id="commentform" class="commentform" action="/add/comment/${ticketnid}" method="post">
+      <label for="commenttitle">title</label><input id="commenttitle" type="text" name="title" value="">
+      <textarea name="body" rows="8" cols="80"></textarea>
+      <h3>bilder hinzufügen</h3>
+      <input type="file" name="image0" value="">
+      <input type="file" name="image1" value="">
+      <input type="file" name="image2" value="">
+      <input type="file" name="image3" value="">
+      <input type="file" name="image4" value="">
+      <input type="file" name="image5" value="">
+      <input type="file" name="image6" value="">
+      <input type="file" name="image7" value="">
+      <input type="file" name="image8" value="">
+      <input type="file" name="image9" value="">
+      <h3>dateien hinzufügen</h3>
+      <input type="file" name="file0" value="">
+      <input type="file" name="file1" value="">
+      <input type="file" name="file2" value="">
+      <input type="file" name="file3" value="">
+      <input type="file" name="file4" value="">
+      <input type="file" name="file5" value="">
+      <input type="file" name="file6" value="">
+      <input type="file" name="file7" value="">
+      <input type="file" name="file8" value="">
+      <input type="file" name="file9" value="">
+    </form>
+  </body>
+</html>
