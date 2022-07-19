@@ -64,7 +64,7 @@ module.exports = function(data){
     </head>
     <body>
       <h1>Tickets</h1>
-      <a href="/add/ticket">Neues Ticket hinzufügen</a>
+      <a href="/ticket/add">Neues Ticket hinzufügen</a>
       <h2>Offene Tickets</h2>
       <ul class="ticketlist">
       <li class="listtitle">

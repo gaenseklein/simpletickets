@@ -1,3 +1,7 @@
+ul.commentlist {
+    list-style: none;
+}
+
 .ticketlist li {
     display: grid;
     grid-template-columns: 1fr 4fr 2fr 1fr 2fr 2fr 1fr 1fr;
@@ -23,4 +27,22 @@
     padding: 2ch;
     margin: 1em;
     box-shadow: 1px 1px 11px 0px;
+}
+.closedwarning {
+    width: 90%;
+    text-align: center;
+    font-size: xxx-large;
+    border: 3px dashed;
+    padding: 1em 1ch;
+    background: coral;
+    margin: auto;
+}
+.header {
+    font-size: xx-large;
+    border: 1px solid;
+    padding-left: 1ch;
+    margin-bottom: 1em;
+}
+.header a{
+    text-decoration: none;
 }

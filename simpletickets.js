@@ -5,11 +5,15 @@ const jwt = require('jsonwebtoken')
 
 var simpletickets = {
   tickets:[],
+  closedtickets:[],
   user: [],
   maxNID:1,
   init: function(){
     //load old tickets
     let oldraw = fs.readFileSync('./tickets/tickets.json','utf-8')
+
+    let maxNID = fs.readFileSync('./maxnid','utf-8')
+    this.maxNID = maxNID*1
     try {
       let oldtickets = JSON.parse(oldraw)
       if(Array.isArray(oldtickets)){
@@ -19,6 +23,15 @@ var simpletickets = {
       for(let x=0;x<this.tickets.length;x++){
         if(this.tickets[x].nid*1>this.maxNID)this.maxNID=this.tickets[x].nid*1
       }
+      fs.writeFileSync('./maxnid',''+this.maxNID,'utf-8')
+
+      let oldclosedraw = fs.readFileSync('./tickets/closed.json','utf-8')
+      let closed = JSON.parse(oldclosedraw)
+      if(Array.isArray(closed)){
+        this.closedtickets=closed;
+        console.log('loaded',closed.length,'closed tickets');
+      }
+
       let olduserraw = fs.readFileSync('./private/user.json','utf-8')
       let olduser = JSON.parse(olduserraw)
       if(Array.isArray(olduser)){
@@ -40,12 +53,23 @@ var simpletickets = {
   getTicket: function(nid,withcomments){
     //do i need to load it from fs? no, its allready loaded, right?
     let ticket = false
-    for(let x=0;x<this.tickets.length;x++){
+    let x=0
+    for(x=0;x<this.tickets.length;x++){
       if(this.tickets[x].nid==nid){
         ticket = this.tickets[x]
         break
       }
     }
+    if(ticket==false){
+      for(x=0;x<this.closedtickets.length;x++){
+        if(this.closedtickets[x].nid==nid){
+          ticket = this.closedtickets[x]
+          ticket.closed = true
+          break
+        }
+      }
+    }
+    if(!ticket)return false
     if(!ticket.author){
       let author = this.getUser(ticket.uid)
       if(author)ticket.author=author.name
@@ -253,27 +277,27 @@ var simpletickets = {
   closeTicket: function(nid){
     let ind = this.getNidIndex(nid)
     if(ind==-1)return false
-    let closedtickets = []
-    if(fs.existsSync('./tickets/closed.json')){
-      let raw = fs.readFileSync('./tickets/closed.json','utf-8')
-      closedtickets = JSON.parse(raw)
-    }
-    closedtickets.push(this.tickets[ind])
+    // let closedtickets = []
+    // if(fs.existsSync('./tickets/closed.json')){
+    //   let raw = fs.readFileSync('./tickets/closed.json','utf-8')
+    //   closedtickets = JSON.parse(raw)
+    // }
+    this.closedtickets.push(this.tickets[ind])
     this.tickets.splice(ind,1)
-    fs.writeFileSync('./tickets/closed.json',JSON.stringify(closedtickets),'utf-8')
+    fs.writeFileSync('./tickets/closed.json',JSON.stringify(this.closedtickets),'utf-8')
   },
   reopenTicket: function(nid){
-    let closedtickets = []
-    if(fs.existsSync('./tickets/closed.json')){
-      let raw = fs.readFileSync('./tickets/closed.json','utf-8')
-      closedtickets = JSON.parse(raw)
-    }
-    for (var i = 0; i < closedtickets.length; i++) {
-      if(closedtickets[i].nid==nid){
-        this.tickets.push(closedtickets[i])
+    // let closedtickets = []
+    // if(fs.existsSync('./tickets/closed.json')){
+    //   let raw = fs.readFileSync('./tickets/closed.json','utf-8')
+    //   closedtickets = JSON.parse(raw)
+    // }
+    for (var i = 0; i < this.closedtickets.length; i++) {
+      if(this.closedtickets[i].nid==nid){
+        this.tickets.push(this.closedtickets[i])
         this.saveTicketsToFS()
-        closedtickets.splice(i,1)
-        fs.writeFileSync('./tickets/closed.json',JSON.stringify(closedtickets),'utf-8')
+        this.closedtickets.splice(i,1)
+        fs.writeFileSync('./tickets/closed.json',JSON.stringify(this.closedtickets),'utf-8')
         return true
       }
     }

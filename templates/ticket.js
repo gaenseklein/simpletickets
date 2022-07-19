@@ -60,6 +60,43 @@ module.exports = function(data){
   if(data.ticket.related_ticket){
     related = `<a href="/ticket/${data.ticket.related_ticket}">related ticket #${data.ticket.related_ticket}</a>`
   }
+  let form = `<form id="commentform" class="commentform" action="/add/comment/${ticketnid}" method="post">
+    <label for="commenttitle">title</label><input id="commenttitle" type="text" name="title" value="">
+    <textarea name="body" rows="8" cols="80"></textarea>
+    <h3>bilder hinzufügen</h3>
+    <div class="fileuploadwrapper">
+      <input type="file" name="image0" value="">
+      <input type="file" name="image1" value="">
+      <input type="file" name="image2" value="">
+      <input type="file" name="image3" value="">
+      <input type="file" name="image4" value="">
+      <input type="file" name="image5" value="">
+      <input type="file" name="image6" value="">
+      <input type="file" name="image7" value="">
+      <input type="file" name="image8" value="">
+      <input type="file" name="image9" value="">
+    </div>
+    <h3>dateien hinzufügen</h3>
+    <div class="fileuploadwrapper">
+      <input type="file" name="file0" value="">
+      <input type="file" name="file1" value="">
+      <input type="file" name="file2" value="">
+      <input type="file" name="file3" value="">
+      <input type="file" name="file4" value="">
+      <input type="file" name="file5" value="">
+      <input type="file" name="file6" value="">
+      <input type="file" name="file7" value="">
+      <input type="file" name="file8" value="">
+      <input type="file" name="file9" value="">
+    </div>
+  </form>`
+  let closedheader = ''
+  let disabled=''
+  if(data.ticket.closed){
+    closedheader=`<div class="closedwarning">ticket is closed</div>`
+    disabled = 'disabled'
+    form = closedheader
+  }
   let raw = `<!DOCTYPE html>
   <html lang="de" dir="ltr">
     <head>
@@ -68,7 +105,12 @@ module.exports = function(data){
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
-      <h1>${title}</h1>
+      <div class="header">
+      <span class="ticketnr">#${ticketnid}</span> |
+      <a href="/ticket/all"> ← zurück zur Übersicht</a>
+      </div>
+      ${closedheader}
+      <h1><span class="title">${title}</span></h1>
       <div class="submitted">
         von: ${name} am: ${pubdate}
       </div>
@@ -76,7 +118,7 @@ module.exports = function(data){
         <div class="tags">
           ${tags}
         </div>
-        <button class="edittagbutton" type="button" name="button">edit tags</button>
+        <button class="edittagbutton" type="button" name="button" ${disabled}>edit tags</button>
       </div>
       <div class="body">
         ${body}
@@ -106,36 +148,7 @@ module.exports = function(data){
         <button class="closebutton" type="button" name="button">close ticket</button>
       </div>
       <h2>Kommentar hinzufügen</h2>
-      <form id="commentform" class="commentform" action="/add/comment/${ticketnid}" method="post">
-        <label for="commenttitle">title</label><input id="commenttitle" type="text" name="title" value="">
-        <textarea name="body" rows="8" cols="80"></textarea>
-        <h3>bilder hinzufügen</h3>
-        <div class="fileuploadwrapper">
-          <input type="file" name="image0" value="">
-          <input type="file" name="image1" value="">
-          <input type="file" name="image2" value="">
-          <input type="file" name="image3" value="">
-          <input type="file" name="image4" value="">
-          <input type="file" name="image5" value="">
-          <input type="file" name="image6" value="">
-          <input type="file" name="image7" value="">
-          <input type="file" name="image8" value="">
-          <input type="file" name="image9" value="">
-        </div>
-        <h3>dateien hinzufügen</h3>
-        <div class="fileuploadwrapper">
-          <input type="file" name="file0" value="">
-          <input type="file" name="file1" value="">
-          <input type="file" name="file2" value="">
-          <input type="file" name="file3" value="">
-          <input type="file" name="file4" value="">
-          <input type="file" name="file5" value="">
-          <input type="file" name="file6" value="">
-          <input type="file" name="file7" value="">
-          <input type="file" name="file8" value="">
-          <input type="file" name="file9" value="">
-        </div>
-      </form>
+      ${form}
     </body>
   </html>
 `

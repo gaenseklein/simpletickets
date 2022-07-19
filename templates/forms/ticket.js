@@ -20,7 +20,7 @@ module.exports = function(data){
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
-      <form class="" action="/add/ticket" method="post">
+      <form class="" action="/ticket/add" method="post">
         <label for="title">Titel</label><input type="text" name="title" id="title" value="${title}" required>
         <label for="tags">Tags</label><input type="text" name="tags" value="${tags}">
         <label for="related">Related Ticket #</label><input type="text" name="related_ticket" value="${related}">
