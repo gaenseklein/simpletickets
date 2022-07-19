@@ -12,7 +12,7 @@ var simpletickets = {
     //load old tickets
     let oldraw = fs.readFileSync('./tickets/tickets.json','utf-8')
 
-    let maxNID = fs.readFileSync('./maxnid','utf-8')
+    let maxNID = fs.readFileSync('./private/maxnid','utf-8')
     this.maxNID = maxNID*1
     try {
       let oldtickets = JSON.parse(oldraw)
@@ -23,7 +23,7 @@ var simpletickets = {
       for(let x=0;x<this.tickets.length;x++){
         if(this.tickets[x].nid*1>this.maxNID)this.maxNID=this.tickets[x].nid*1
       }
-      fs.writeFileSync('./maxnid',''+this.maxNID,'utf-8')
+      fs.writeFileSync('./private/maxnid',''+this.maxNID,'utf-8')
 
       let oldclosedraw = fs.readFileSync('./tickets/closed.json','utf-8')
       let closed = JSON.parse(oldclosedraw)
