@@ -25,7 +25,7 @@ const templates = {
     }
   },
   buildError: function (nr){
-    return 'oops, something went wrong';
+    return 'oops, something went wrong\n'+nr;
   },
 
 }

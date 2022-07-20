@@ -103,7 +103,7 @@ var simpletickets = {
     let pubdatesort = coms.comments.sort(function(a,b){
       let da = new Date(a.pubdate).getTime()
       let db = new Date(b.pubdate).getTime()
-      return db-da;
+      return da-db;
     })
     function getindex(cid){
       for(let i=0;i<result.length;i++){
@@ -232,19 +232,41 @@ var simpletickets = {
   saveTicketsToFS: function(){
     let txt = JSON.stringify(this.tickets)
     fs.writeFileSync('./tickets/tickets.json',txt,'utf-8')
+    fs.writeFileSync('./private/maxnid',''+this.maxNID,'utf-8')
   },
   saveNewTicket: function(userticket){
     let ticket = this.createTicket(userticket)
     if(!ticket)return false
+    ticket.nid=this.maxNID+1
+    let i=0
+    if(userticket.upload){
+      console.log('uploading files...');
+      let filenames = this.uploadFiles(userticket.upload,ticket)
+      console.log('got response',filenames);
+      if(!filenames)return false
+      if(filenames.images.length>0){
+        ticket.images=[]
+        for(i=0;i<filenames.images.length;i++){
+          ticket.images.push(filenames.images[i])
+        }
+      }
+      if(filenames.files.length>0){
+        ticket.files=[]
+        for(i=0;i<filenames.files.length;i++){
+          ticket.files.push(filenames.files[i])
+        }
+      }
+    }
     this.maxNID++
-    ticket.nid=this.maxNID
-    this.tickets.push(ticket)
+    this.tickets.unshift(ticket)
     this.saveTicketsToFS()
   },
   saveNewComment: function(nid,usercomment){
+    console.log('save comment for nid',nid);
     let ind = this.getNidIndex(nid)
     if(ind==-1)return false
     let comment = this.createComment(usercomment)
+    console.log('save usercomment',comment);
     if(!comment)return false
     let obj = {nid:nid,comments:[]}
     let filepath = './tickets/comments.'+nid+'.json'
@@ -264,6 +286,24 @@ var simpletickets = {
     }
     maxcid++
     comment.cid = maxcid
+    if(usercomment.upload){
+      console.log('uploading files...');
+      let filenames = this.uploadFiles(usercomment.upload,comment)
+      console.log('got response',filenames);
+      if(!filenames)return false
+      if(filenames.images.length>0){
+        comment.images=[]
+        for(i=0;i<filenames.images.length;i++){
+          comment.images.push(filenames.images[i])
+        }
+      }
+      if(filenames.files.length>0){
+        comment.files=[]
+        for(i=0;i<filenames.files.length;i++){
+          comment.files.push(filenames.files[i])
+        }
+      }
+    }
     obj.comments.push(comment)
     let txt = JSON.stringify(obj)
     fs.writeFileSync(filepath,txt,'utf-8')
@@ -303,31 +343,35 @@ var simpletickets = {
     }
     return false
   },
-  uploadFiles: function(files,filetype,nid){
-    let basepath = 'files/'+filetype+'/'
+  uploadFiles: function(upload,ticket){
+    let files = upload.images.concat(upload.files)
+    let imagelength = upload.images.length;
+    let basepath = 'files/'
+    let root = './private/'
     let d = new Date()
-    let timepath = d.getFullYear() +'/'+ d.getMonth()
-    let nidpath ='/'+(this.maxNID+1)
-    if(nid)nidpath='/'+nid
+    let timepath = d.getFullYear() +'/'//+ d.getMonth()
+    let nidpath ='/'+ticket.nid
     let path = basepath + timepath + nidpath
-    if(!fs.existsSync(path)){
-      fs.mkdirSync(path,{recursive:true});
+    if(!fs.existsSync(root+path)){
+      fs.mkdirSync(root+path,{recursive:true});
     }
     // let length = fs.readdirSync(path).length
     let fileurls = []
+    let imageurls = []
+
     try {
       for(let x=0;x<files.length;x++){
-        let fname = files[x].filename;
-        fname=this.chooseNewName('./'+path+'/',fname);
-
+        let fname = files[x].name;
+        fname=this.chooseNewName(root+path+'/',fname);
         if(!fname){
           console.log('filename not allowed?',fname,files[x].filename);
           continue;
         }
-        fs.writeFileSync('./'+path+'/'+fname,files[x].data);
-        fileurls.push(path+'/'+fname)
+        fs.writeFileSync(root+path+'/'+fname,files[x].data);
+        if(x<imagelength)imageurls.push(path+'/'+fname)
+        else fileurls.push(path+'/'+fname)
       }
-      return fileurls
+      return {images:imageurls, files:fileurls}
     } catch (e) {
       console.log('uploading files went wrong',e)
       return false

@@ -13,7 +13,8 @@ module.exports = function(data){
   let x = 0
   let images = ''
   if(data.ticket.images)for(x=0;x<data.ticket.images.length;x++){
-    images+=`<img src="/${data.ticket.images[x]}">`
+    let imgurl = encodeURI(data.ticket.images[x])
+    images+=`<img src="/${imgurl}">`
   }
   let files = ''
   if(data.ticket.files)for(x=0;x<data.ticket.files.length;x++){
@@ -29,16 +30,20 @@ module.exports = function(data){
     let cpubdate = new Date(data.comments[x].pubdate).toLocaleString('de')
     let cbody = data.comments[x].body
     let cimages = ''
-    for(let cx=0;cx<data.comments[x].images.length;cx++)cimages+=`<img src="/${data.comments[x].images[cx]}">`
+    if(data.comments[x].images)for(let cx=0;cx<data.comments[x].images.length;cx++)cimages+=`<img src="/${data.comments[x].images[cx]}">`
     let cfiles = ''
-    for(cx=0;cx<data.comments[x].files.length;cx++){
+    if(data.comments[x].files)for(cx=0;cx<data.comments[x].files.length;cx++){
       let furl = data.comments[x].files[cx]
       let fname = furl.substring(furl.lastIndexOf('/')+1)
       cfiles+=`<a href="/${furl}" download>${fname}</a>`
     }
     let ccss=''
-    if(data.comments[x].depth && data.comments[x].depth*1 > 0)ccss+=' depth depth'+data.comments[x].depth
-    commentlist+=`<li class="comment${ccss}">
+    let cdepth = 0
+    if(data.comments[x].depth && data.comments[x].depth*1 > 0){
+      ccss+=' depth depth'+data.comments[x].depth
+      cdepth = data.comments[x].depth
+    }
+    commentlist+=`<li id="commentli${data.comments[x].cid}" class="comment${ccss}">
       <h3>${ctitle}</h3>
       <div class="submitted">
         von: ${cname} am: ${cpubdate}
@@ -54,29 +59,24 @@ module.exports = function(data){
         <h4>dateien:</h4>
         ${cfiles}
       </div>
+      <div class="reply">
+        <button onclick="moveCommentForm(${data.comments[x].cid},${cdepth})">hier antworten</button>
+      </div>
     </li>`
   }
   let related = ''
   if(data.ticket.related_ticket){
     related = `<a href="/ticket/${data.ticket.related_ticket}">related ticket #${data.ticket.related_ticket}</a>`
   }
-  let form = `<form id="commentform" class="commentform" action="/add/comment/${ticketnid}" method="post">
-    <label for="commenttitle">title</label><input id="commenttitle" type="text" name="title" value="">
-    <textarea name="body" rows="8" cols="80"></textarea>
-    <h3>bilder hinzufügen</h3>
-    <div class="fileuploadwrapper">
-      <input type="file" name="image0" value="">
-      <input type="file" name="image1" value="">
-      <input type="file" name="image2" value="">
-      <input type="file" name="image3" value="">
-      <input type="file" name="image4" value="">
-      <input type="file" name="image5" value="">
-      <input type="file" name="image6" value="">
-      <input type="file" name="image7" value="">
-      <input type="file" name="image8" value="">
-      <input type="file" name="image9" value="">
+  let form = `<form id="commentform" class="commentform" action="/ticket/addcomment/${ticketnid}" method="post" enctype="multipart/form-data">
+    <input type="hidden" id="commentdepth" name="depth" value="0">
+    <input type="hidden" id="commentparent" name="parent">
+    <div>
+    <label for="commenttitle">title</label>
+    <input id="commenttitle" type="text" name="title" value="">
     </div>
-    <h3>dateien hinzufügen</h3>
+    <textarea name="body" rows="8" cols="80"></textarea>
+    <h3>bilder und dateien hinzufügen</h3>
     <div class="fileuploadwrapper">
       <input type="file" name="file0" value="">
       <input type="file" name="file1" value="">
@@ -89,6 +89,7 @@ module.exports = function(data){
       <input type="file" name="file8" value="">
       <input type="file" name="file9" value="">
     </div>
+    <input type="submit" value="abschicken">
   </form>`
   let closedheader = ''
   let disabled=''
@@ -135,7 +136,7 @@ module.exports = function(data){
       <div class="actiontools">
         ${related}
         <button class="edittagbutton" type="button" name="button">edit tags</button>
-        <a class="goto" href="#commentform">add new comment</a>
+        <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
         <button class="closebutton" type="button" name="button">close ticket</button>
       </div>
       <h2>Kommentare</h2>
@@ -147,8 +148,19 @@ module.exports = function(data){
         <button class="edittagbutton" type="button" name="button">edit tags</button>
         <button class="closebutton" type="button" name="button">close ticket</button>
       </div>
+      <div id="commentdownwrapper">
       <h2>Kommentar hinzufügen</h2>
       ${form}
+      </div>
+      <script>
+      function moveCommentForm(id,depth){
+        let li = document.getElementById('commentli'+id)
+        if(!li)return
+        li.appendChild(commentform)
+        commentparent.value=id
+        commentdepth.value = depth+1
+      }
+      </script>
     </body>
   </html>
 `

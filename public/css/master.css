@@ -46,3 +46,12 @@ ul.commentlist {
 .header a{
     text-decoration: none;
 }
+.ticketform label {
+    display: block;
+    margin-top: 1em;
+}
+
+.ticketform input[type="submit"] {
+    margin-top: 2em;
+    font-size: xx-large;
+}
