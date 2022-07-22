@@ -53,11 +53,13 @@ router.post('/add', fileUpload(),async (req,res)=>{
           }
         }
         console.log('ready to update?',updobj);
-        simpletickets.saveNewTicket(updobj)
-        console.log(Object.keys(req.files))
-        let result = 'testing...'
-
-        res.send(result)
+        let savedticket = simpletickets.saveNewTicket(updobj)
+        // console.log(Object.keys(req.files))
+        // let result = 'testing...'
+        // res.send(result)
+        // res.redirect('')
+        if(!savedticket || !savedticket.nid)return res.status(400).send('oops, something went wrong')
+        res.redirect('/ticket/'+savedticket.nid)
       }catch(e){
         console.log(e)
         res.status(400).send('an error occured')

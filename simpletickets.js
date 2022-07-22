@@ -265,6 +265,7 @@ var simpletickets = {
     this.maxNID++
     this.tickets.unshift(ticket)
     this.saveTicketsToFS()
+    return ticket
   },
   saveNewComment: function(nid,usercomment){
     console.log('save comment for nid',nid);

@@ -74,6 +74,7 @@ module.exports = function(data){
       <h1>Tickets</h1>
       <a href="/ticket/add">Neues Ticket hinzufügen</a>
       <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
+      <a class="logoutlink" href="/login/logout">Log out</a>
       <h2>${offene} Tickets</h2>
       <ul class="ticketlist">
       <li class="listtitle">
@@ -83,12 +84,12 @@ module.exports = function(data){
         <div class="title clickable" onclick="ticketman.sort('title')">
           titel
         </div>
-        <div class="tags clickable" onclick="tagfilter.classList.toggle('open')">
-          tags
-        </div>
-        <div id="tagfilter">
-        <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
-        <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+        <div class="tags clickable">
+          <div onclick="tagfilter.classList.toggle('open')">tags</div>
+          <div id="tagfilter">
+          <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
+          <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+          </div>
         </div>
         <div class="related">
           zugehöriges ticket
