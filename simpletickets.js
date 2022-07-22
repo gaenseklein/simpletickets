@@ -186,6 +186,15 @@ var simpletickets = {
         }
         obj[files[x]]=fl
       }
+      if(ticket.tag && typeof ticket.tag == 'string'){
+        let tags = ticket.tag.split(',')
+        for(x=tags.length-1;x>=0;x--){
+          while(tags[x][0]==' ')tags[x]=tags[x].substring(1)
+          while(tags[x][tags[x].length-1]==' ')tags[x]=tags[x].substring(0,tags[x].length-1)
+          if(tags[x].length==0)tags.splice(x,1)
+        }
+        if(tags.length>0)obj.tags=tags
+      }
       for(x=0;x<obligatorio.length;x++){
         if(!obj[obligatorio[x]] || (Array.isArray(obj[obligatorio[x]]) && obj[obligatorio[x]].length==0))return false;
       }
@@ -342,10 +351,15 @@ var simpletickets = {
     // }
     for (var i = 0; i < this.closedtickets.length; i++) {
       if(this.closedtickets[i].nid==nid){
+        console.log('closedticket found');
+        delete this.closedtickets[i].closed
         this.tickets.unshift(this.closedtickets[i])
-        this.closedtickets.splice(i,1)
+        console.log(this.closedtickets.splice(i,1))
         this.saveTicketsToFS()
         fs.writeFileSync('./tickets/closed.json',JSON.stringify(this.closedtickets),'utf-8')
+        let found=false
+        for(let x=0;x<this.tickets.length;x++)if(this.tickets[x].nid==nid)found=true
+        if(!found)console.log('ticket not found in opentickets!');
         return true
       }
     }

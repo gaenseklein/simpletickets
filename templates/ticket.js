@@ -2,6 +2,7 @@
 const simplemd = require('../simplemd.js')
 
 module.exports = function(data){
+  console.log(data.ticket)
   let ticketnid = data.ticket.nid
   let title = data.ticket.title
   let name = data.ticket.author
@@ -102,6 +103,14 @@ module.exports = function(data){
     closeoropen = 'reopen'
     closeoropentxt = 'open'
   }
+  let actiontools = `<div class="actiontools">
+    ${related}
+    <button class="edittagbutton" type="button" name="button">edit tags</button>
+    <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
+    <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt} this ticket</a>
+  </div>`
+  let actiontools2 = ''
+  if(data.comments)actiontools2 = actiontools
   let raw = `<!DOCTYPE html>
   <html lang="de" dir="ltr">
     <head>
@@ -137,21 +146,12 @@ module.exports = function(data){
         ${files}
       </div>
       <!-- action tools here? i did not like it that way -->
-      <div class="actiontools">
-        ${related}
-        <button class="edittagbutton" type="button" name="button">edit tags</button>
-        <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
-        <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt} this ticket</a>
-      </div>
+      ${actiontools}
       <h2>Kommentare</h2>
       <ul class="commentlist">
         ${commentlist}
       </ul>
-      <div class="actiontools">
-        ${related}
-        <button class="edittagbutton" type="button" name="button">edit tags</button>
-        <button class="closebutton" type="button" name="button">close ticket</button>
-      </div>
+      ${actiontools2}
       <div id="commentdownwrapper">
       <h2>Kommentar hinzufügen</h2>
       ${form}
