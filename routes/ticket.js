@@ -124,6 +124,38 @@ router.get('/all', async (req,res)=>{
         res.status(400).send('an error occured')
       }
 });
+
+router.get('/closed', async (req,res)=>{
+      try{
+        let data = simpletickets.getClosedTickets()
+        data.closed=true
+        let result = templates.buildPage('list',data)
+        res.send(result)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
+router.get('/close/:nid', async (req,res)=>{
+      try{
+        let data = simpletickets.closeTicket(req.params.nid)
+        if(!data)return res.status(404).send(req.params.nid+' not found as open ticket. maybe it is closed')
+        res.redirect('/ticket/'+req.params.nid)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
+router.get('/reopen/:nid', async (req,res)=>{
+      try{
+        let data = simpletickets.reopenTicket(req.params.nid)
+        if(!data)return res.status(404).send(req.params.nid+' not found as closed ticket. maybe it is open?')
+        res.redirect('/ticket/'+req.params.nid)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
 router.get('/:nid', async (req,res)=>{
       try{
         let data = simpletickets.getTicket(req.params.nid,true)
@@ -136,5 +168,4 @@ router.get('/:nid', async (req,res)=>{
         res.status(400).send('an error occured')
       }
 });
-
 module.exports = router;

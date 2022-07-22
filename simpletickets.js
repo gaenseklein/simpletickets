@@ -141,7 +141,12 @@ var simpletickets = {
   },
   getTickets: function(){
     let list = JSON.parse(JSON.stringify(this.tickets))
-    list.sort(function(a,b){return b.pubdate-a.pubdate})
+    list.sort(function(a,b){return b.last_change-a.last_change})
+    return list
+  },
+  getClosedTickets: function(){
+    let list = JSON.parse(JSON.stringify(this.closedtickets))
+    list.sort(function(a,b){return b.last_change-a.last_change})
     return list
   },
   createSaveObject: function(ticket, fields){
@@ -322,9 +327,11 @@ var simpletickets = {
     //   let raw = fs.readFileSync('./tickets/closed.json','utf-8')
     //   closedtickets = JSON.parse(raw)
     // }
-    this.closedtickets.push(this.tickets[ind])
+    this.closedtickets.unshift(this.tickets[ind])
     this.tickets.splice(ind,1)
     fs.writeFileSync('./tickets/closed.json',JSON.stringify(this.closedtickets),'utf-8')
+    this.saveTicketsToFS()
+    return true
   },
   reopenTicket: function(nid){
     // let closedtickets = []
@@ -334,9 +341,9 @@ var simpletickets = {
     // }
     for (var i = 0; i < this.closedtickets.length; i++) {
       if(this.closedtickets[i].nid==nid){
-        this.tickets.push(this.closedtickets[i])
-        this.saveTicketsToFS()
+        this.tickets.unshift(this.closedtickets[i])
         this.closedtickets.splice(i,1)
+        this.saveTicketsToFS()
         fs.writeFileSync('./tickets/closed.json',JSON.stringify(this.closedtickets),'utf-8')
         return true
       }

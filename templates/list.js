@@ -26,7 +26,7 @@ module.exports = function(data){
     if(x%2==0)cssclass+="even"
     rellink = ''
     if(data[x].related_ticket)rellink = `<a href="/ticket/${data[x].related_ticket}">#${data[x].related_ticket}</a>`
-    list+=`    <li class="${cssclass}" tags="${tagstring}" pubdate="${pubdate}" change="${last_change}">
+    list+=`    <li class="${cssclass}" tags="${tagstring}" pubdate="${pubdate}" change="${last_change}" nid="${data[x].nid}">
           <div class="nid">
             #${data[x].nid}
           </div>
@@ -41,10 +41,10 @@ module.exports = function(data){
           <div class="related">
             ${rellink}
           </div>
-          <div class="publicdate">
+          <div class="pubdate">
             ${pdate} Uhr
           </div>
-          <div class="updated">
+          <div class="change">
             ${updated}
           </div>
           <div class="commentcount">
@@ -55,38 +55,55 @@ module.exports = function(data){
           </div>
         </li>`
   }
+  let offene = 'Offene'
+  let closedlink='closed'
+  let closedlinktxt = 'geschlossene'
+  if(data.closed){
+    offene = 'Geschlossene'
+    closedlink = 'all'
+    closedlinktxt = 'offene'
+  }
   let raw = `<!DOCTYPE html>
   <html lang="de" dir="ltr">
     <head>
       <meta charset="utf-8">
-      <title>Offene Tickets</title>
+      <title>${offene} Tickets</title>
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
       <h1>Tickets</h1>
       <a href="/ticket/add">Neues Ticket hinzufügen</a>
-      <h2>Offene Tickets</h2>
+      <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
+      <h2>${offene} Tickets</h2>
       <ul class="ticketlist">
       <li class="listtitle">
-        <div class="nid">
+        <div class="nid clickable" onclick="ticketman.sort('nid',true)">
           ticketnummer
         </div>
-        <div class="title">
+        <div class="title clickable" onclick="ticketman.sort('title')">
           titel
         </div>
-        <div class="tags">
+        <div class="tags clickable" onclick="tagfilter.classList.toggle('open')">
           tags
+        </div>
+        <div id="tagfilter">
+        <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
+        <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
         </div>
         <div class="related">
           zugehöriges ticket
         </div>
-        <div class="publicdate">
+        <div class="pubdate clickable" onclick="ticketman.sort('pubdate',true)">
           Veröffentlicht
         </div>
-        <div class="updated">
+        <div class="change clickable" onclick="ticketman.sort('pubdate',true)">
           Änderung
+          <div id="sortshow" class="down">
+            <span>⌃</span>
+            <span>⌄</span>
+          </div>
         </div>
-        <div class="commentcount">
+        <div class="commentcount clickable" onclick="ticketman.sort('commentcount',true)">
           Beiträge
         </div>
         <div class="lastcommented">
@@ -95,6 +112,7 @@ module.exports = function(data){
       </li>
         ${list}
       </ul>
+      <script src="/public/listsort.js"></script>
     </body>
   </html>
 `

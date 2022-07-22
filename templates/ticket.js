@@ -93,10 +93,14 @@ module.exports = function(data){
   </form>`
   let closedheader = ''
   let disabled=''
+  let closeoropen = 'close'
+  let closeoropentxt= 'close'
   if(data.ticket.closed){
     closedheader=`<div class="closedwarning">ticket is closed</div>`
     disabled = 'disabled'
     form = closedheader
+    closeoropen = 'reopen'
+    closeoropentxt = 'open'
   }
   let raw = `<!DOCTYPE html>
   <html lang="de" dir="ltr">
@@ -137,7 +141,7 @@ module.exports = function(data){
         ${related}
         <button class="edittagbutton" type="button" name="button">edit tags</button>
         <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
-        <button class="closebutton" type="button" name="button">close ticket</button>
+        <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt} this ticket</a>
       </div>
       <h2>Kommentare</h2>
       <ul class="commentlist">

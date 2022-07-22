@@ -55,3 +55,35 @@ ul.commentlist {
     margin-top: 2em;
     font-size: xx-large;
 }
+#sortshow.down span:first-child {
+    display: none;
+}
+
+#sortshow.up span:last-child {
+    display: none;
+}
+
+#sortshow {
+    display: inline-block;
+}
+.clickable{
+  cursor:pointer;
+}
+.ticketlist li.hide{
+  display: none;
+}
+#tagfilter{
+  position: absolute;
+  display: none;
+}
+#tagfilter.open{
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  background:white;
+  padding: 1ch;
+  border:1px solid;
+}
+.clickable:hover {
+    text-decoration: underline;
+}
