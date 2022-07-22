@@ -88,6 +88,28 @@ input[type="submit"] {
 .clickable:hover {
     text-decoration: underline;
 }
+#tageditwrapper {
+    background: rgba(0,0,0,0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+#tageditwrapper .innerwrapper {
+    background: aliceblue;
+    width: 60ch;
+    padding: 5ch;
+    margin: auto;
+    margin-top: 30%;
+    box-shadow: 0 0 16px 2px;
+}
+#tageditwrapper.show{
+  display: block;
+}
+
 .fileswrapper {
     font-size: xx-large;
     margin-bottom: 1em;

@@ -201,7 +201,7 @@ var simpletickets = {
       if(obj.uid)obj.author = this.getUser(obj.uid).name
       return obj
   },
-  createTicket: function(ticket){
+  createTicket: function(ticket,fieldsonly){
     //creates a save object with type-checking for tickets
       //'title', 'uid', 'nid','body', 'assigned_users', 'perc', 'tag','images', 'files', 'related_ticket', 'closed', 'pubdate', 'last_change','comment_count'
       let fields = {
@@ -213,6 +213,7 @@ var simpletickets = {
         files : ['images','files'],
         obligatorio: ['title','uid','body'],
       }
+      if(fieldsonly)fields.obligatorio=[]
       return this.createSaveObject(ticket, fields)
   },
   createComment: function(comment){
@@ -242,6 +243,19 @@ var simpletickets = {
     if(!found)return false
     this.saveTicketsToFS()
     return true
+  },
+  updateTicket: function(nid,userticket){
+    let ind = this.getNidIndex(nid)
+    if(ind==-1)return false
+    let savet = this.createTicket(userticket, true)
+    let keys = Object.keys(userticket)
+    console.log('update ticket',keys,savet,userticket);
+    for(let x=0;x<keys.length;x++){
+      let key=keys[x]
+      if(savet[key])this.tickets[ind][key]=savet[key]
+    }
+    this.saveTicketsToFS()
+    return this.tickets[ind]
   },
   saveTicketsToFS: function(){
     let txt = JSON.stringify(this.tickets)

@@ -170,4 +170,18 @@ router.get('/:nid', async (req,res)=>{
         res.status(400).send('an error occured')
       }
 });
+router.post('/tag/:nid', async (req,res)=>{
+      try{
+        let obj ={
+          tag:req.body.tags,
+          tags:req.body.tags
+        }
+        let ticket = simpletickets.updateTicket(req.params.nid,obj)
+        if(!ticket)return res.status(400).send('could not update tags - maybe ticket is closed?')
+        res.redirect('/ticket/'+req.params.nid)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
 module.exports = router;

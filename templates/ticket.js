@@ -9,7 +9,11 @@ module.exports = function(data){
   let pdate = new Date(data.ticket.pubdate)
   let pubdate = pdate.toLocaleString('de') + " Uhr"
   let tags = ''
-  if(data.ticket.tags)tags = data.ticket.tags.join(' , ')
+  let tagvaluestring = ''
+  if(data.ticket.tags){
+    tags = data.ticket.tags.join(' , ')
+    tagvaluestring=data.ticket.tags.join(', ')
+  }
   let body = simplemd(data.ticket.body)
   let x = 0
   let images = ''
@@ -105,7 +109,7 @@ module.exports = function(data){
   }
   let actiontools = `<div class="actiontools">
     ${related}
-    <button class="edittagbutton" type="button" name="button">edit tags</button>
+    <button class="edittagbutton" type="button" name="button" ${disabled} onclick="tageditwrapper.classList.toggle('show',true)">edit tags</button>
     <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
     <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt} this ticket</a>
   </div>`
@@ -132,7 +136,17 @@ module.exports = function(data){
         <div class="tags">
           ${tags}
         </div>
-        <button class="edittagbutton" type="button" name="button" ${disabled}>edit tags</button>
+        <button class="edittagbutton" type="button" name="button" ${disabled} onclick="tageditwrapper.classList.toggle('show',true)">edit tags</button>
+        <div id="tageditwrapper">
+          <div class="innerwrapper">
+            <h2>change tags</h2>
+            <form id="tagform" class="" action="/ticket/tag/${ticketnid}" method="post">
+              <input type="text" name="tags" value="${tagvaluestring}">
+              <button type="button" onclick="tagform.submit()">change tags</button>
+              <button type="button" onclick="tageditwrapper.classList.toggle('show',false)">cancel</button>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="body">
         ${body}
