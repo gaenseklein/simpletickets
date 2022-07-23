@@ -11,7 +11,7 @@ const auth = require('./routes/auth');
 const front = require('./routes/front')
 const loginRoute = require('./routes/login');
 const ticket = require('./routes/ticket')
-// const userRoute = require('./routes/user');
+const userRoute = require('./routes/user');
 // const public = require('./routes/public');
 
 //implementa simpletickets:
@@ -22,7 +22,7 @@ simpletickets.init();
 // app.use(express.json({limit: '50mb'}));
 
 app.use('/login',express.urlencoded({extended:false}),loginRoute);
-// app.use('/user',auth, express.urlencoded({extended:true}),userRoute);
+app.use('/user',auth, express.urlencoded({extended:true}),userRoute);
 // app.use('/user', express.urlencoded({extended:true}),userRoute);
 
 //serving static-files for test-purpose / can be served directly by nginx

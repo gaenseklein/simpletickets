@@ -5,6 +5,7 @@ const raw = {
   form:{
     login: require('./templates/forms/login.js'),
     ticket: require('./templates/forms/ticket.js'),
+    user: require('./templates/forms/user.js'),
   },
 }
 

@@ -74,6 +74,7 @@ module.exports = function(data){
       <h1>Tickets</h1>
       <a href="/ticket/add">Neues Ticket hinzufügen</a>
       <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
+      <a href="/user">User ändern</a>
       <a class="logoutlink" href="/login/logout">Log out</a>
       <h2>${offene} Tickets</h2>
       <ul class="ticketlist">
