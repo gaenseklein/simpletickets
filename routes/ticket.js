@@ -158,18 +158,6 @@ router.get('/reopen/:nid', async (req,res)=>{
         res.status(400).send('an error occured')
       }
 });
-router.get('/:nid', async (req,res)=>{
-      try{
-        let data = simpletickets.getTicket(req.params.nid,true)
-        if(!data)return res.status(404).send('ticket not found '+req.params.nid)
-        // console.log('data:',data);
-        let result = templates.buildPage('ticket',data)
-        res.send(result)
-      }catch(e){
-        console.log(e)
-        res.status(400).send('an error occured')
-      }
-});
 router.post('/tag/:nid', async (req,res)=>{
       try{
         let obj ={
@@ -184,4 +172,39 @@ router.post('/tag/:nid', async (req,res)=>{
         res.status(400).send('an error occured')
       }
 });
+
+router.get('/search', async (req,res)=>{
+      try{
+        let result = templates.buildPage('search',[])
+        res.send(result)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
+router.post('/search', async (req,res)=>{
+      try{
+        console.log('search',req.body.search);
+        let data = simpletickets.search(req.body.search, true)
+        data.searchdata = req.body.search
+        let result = templates.buildPage('search',data)
+        res.send(result)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
+router.get('/:nid', async (req,res)=>{
+      try{
+        let data = simpletickets.getTicket(req.params.nid,true)
+        if(!data)return res.status(404).send('ticket not found '+req.params.nid)
+        // console.log('data:',data);
+        let result = templates.buildPage('ticket',data)
+        res.send(result)
+      }catch(e){
+        console.log(e)
+        res.status(400).send('an error occured')
+      }
+});
+
 module.exports = router;

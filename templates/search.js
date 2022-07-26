@@ -2,6 +2,8 @@
 
 module.exports = function(data){
   let list = ''
+  let listclosed = ''
+  let searchdata = data.searchdata || ''
   for(let x=0;x<data.length;x++){
     let pubdate = new Date(data[x].pubdate)
     let pdate = pubdate.toLocaleString('de')
@@ -26,7 +28,7 @@ module.exports = function(data){
     if(x%2==0)cssclass+="even"
     rellink = ''
     if(data[x].related_ticket)rellink = `<a href="/ticket/${data[x].related_ticket}">#${data[x].related_ticket}</a>`
-    list+=`    <li class="${cssclass}" tags="${tagstring}" pubdate="${pubdate}" change="${last_change}" nid="${data[x].nid}">
+    let listadd = `    <li class="${cssclass}" tags="${tagstring}" pubdate="${pubdate}" change="${last_change}" nid="${data[x].nid}">
           <div class="nid">
             #${data[x].nid}
           </div>
@@ -54,33 +56,31 @@ module.exports = function(data){
             ${lastauthor}
           </div>
         </li>`
+      if(data[x].closed)listclosed+=listadd
+      else list += listadd
   }
-  let offene = 'Offene'
-  let closedlink='closed'
-  let closedlinktxt = 'geschlossene'
-  if(data.closed){
-    offene = 'Geschlossene'
-    closedlink = 'all'
-    closedlinktxt = 'offene'
-  }
+
   let raw = `<!DOCTYPE html>
   <html lang="de" dir="ltr">
     <head>
       <meta charset="utf-8">
-      <title>${offene} Tickets</title>
+      <title>Ticketsuche</title>
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
-      <h1>Tickets</h1>
-      <a href="/ticket/add">Neues Ticket hinzufügen</a>
-      <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
-      <a href="/ticket/search">Ticket suchen</a>
-      <span class="userspan">
-      <a href="/user">User ändern</a>
-      <a class="logoutlink" href="/login/logout">Log out</a>
-      </span>
-      <h2>${offene} Tickets</h2>
-      <ul class="ticketlist">
+      <h1>Ticketsuche</h1>
+      <div class="header">
+      <span class="ticketnr">#search</span> |
+      <a href="/ticket/all"> ← zurück zur Übersicht</a>
+      </div>
+      <div id="searchwrapper">
+        <form class="" action="/ticket/search" method="post">
+          <input type="text" name="search" value="${searchdata}">
+          <input type="submit" value="suchen">
+        </form>
+      </div>
+      <h2>Offene Tickets</h2>
+      <ul class="ticketlist" id="opentickets">
       <li class="listtitle">
         <div class="nid clickable" onclick="ticketman.sort('nid',true)">
           ticketnummer
@@ -116,6 +116,44 @@ module.exports = function(data){
         </div>
       </li>
         ${list}
+      </ul>
+      <h2>Geschlossene Tickets</h2>
+      <ul class="ticketlist" id=closedtickets>
+      <li class="listtitle">
+        <div class="nid clickable" onclick="ticketman.sort('nid',true)">
+          ticketnummer
+        </div>
+        <div class="title clickable" onclick="ticketman.sort('title')">
+          titel
+        </div>
+        <div class="tags clickable">
+          <div onclick="tagfilter.classList.toggle('open')">tags</div>
+          <div id="tagfilter">
+          <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
+          <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+          </div>
+        </div>
+        <div class="related">
+          zugehöriges ticket
+        </div>
+        <div class="pubdate clickable" onclick="ticketman.sort('pubdate',true)">
+          Veröffentlicht
+        </div>
+        <div class="change clickable" onclick="ticketman.sort('pubdate',true)">
+          Änderung
+          <div id="sortshow" class="down">
+            <span>⌃</span>
+            <span>⌄</span>
+          </div>
+        </div>
+        <div class="commentcount clickable" onclick="ticketman.sort('commentcount',true)">
+          Beiträge
+        </div>
+        <div class="lastcommented">
+          Letzter Beitrag
+        </div>
+      </li>
+        ${listclosed}
       </ul>
       <script src="/public/listsort.js"></script>
     </body>

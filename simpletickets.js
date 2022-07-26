@@ -508,6 +508,32 @@ var simpletickets = {
       return false;
     }
   },
+  search: function(txt, closed, comments){
+    console.log('search for',txt);
+    let result = []
+    let x=0
+    for(x=0;x<this.tickets.length;x++){
+      if(this.tickets[x].body.indexOf(txt)>-1 ||
+        this.tickets[x].title.indexOf(txt)>-1 ||
+        (this.tickets[x].tag && this.tickets[x].tag.indexOf(txt)>-1))
+      result.push(this.tickets[x])
+
+    }
+    console.log('found',result.length,'open tickets');
+
+    if(closed){
+      let resl = result.length
+      for(x=0;x<this.closedtickets.length;x++){
+        if(this.closedtickets[x].body.indexOf(txt)>-1 ||
+          this.closedtickets[x].title.indexOf(txt)>-1 ||
+          (this.closedtickets[x].tag && this.closedtickets[x].tag.indexOf(txt)>-1))          
+          result.push(this.closedtickets[x])
+      }
+      resl=result.length-resl
+      console.log('found '+resl+' closed tickets')
+    }
+    return result
+  },
 
 }
 
