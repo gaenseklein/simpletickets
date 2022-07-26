@@ -2,6 +2,36 @@
 const fs = require('fs')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer');
+
+async function sendMail(body, subject, to){
+  if(!process.env.EMAILHOST || !process.env.EMAILUSER || !process.env.EMAILPW){
+        console.log('could not send email',to, subject,body)
+        return;
+    }
+  const hostoptions = {
+    host:process.env.EMAILHOST,
+    port:465,
+    auth:{
+      user:process.env.EMAILUSER,
+      pass:process.env.EMAILPW
+    }
+  }
+  console.log(hostoptions);
+  const transporter = nodemailer.createTransport(hostoptions);
+    let mailoptions = {
+    from: process.env.EMAILUSER,
+    to: to,
+    subject: subject || 'NEW FEEDBACK',
+    text:body
+    }
+    console.log('mailoptions:',mailoptions);
+  let resp = await transporter.sendMail(mailoptions);
+  console.log(resp);
+  return resp;
+}
+
+
 
 var simpletickets = {
   tickets:[],
@@ -288,6 +318,7 @@ var simpletickets = {
     this.maxNID++
     this.tickets.unshift(ticket)
     this.saveTicketsToFS()
+    this.checkForMention(ticket)
     return ticket
   },
   saveNewComment: function(nid,usercomment){
@@ -341,7 +372,8 @@ var simpletickets = {
     this.tickets[ind].last_comment_uid = comment.uid
     this.tickets[ind].last_comment_author = this.getUser(comment.uid).name
     this.saveTicketsToFS()
-    return true
+    this.checkForMention(comment)
+    return comment
   },
   closeTicket: function(nid){
     let ind = this.getNidIndex(nid)
@@ -506,6 +538,30 @@ var simpletickets = {
     } catch (e) {
       console.log(e);
       return false;
+    }
+  },
+  checkForMention: async function(ticket){
+    let text = ticket.body;
+    for(let u=0;u<this.user.length;u++){
+        if(text.indexOf('@'+this.user[u].name)>-1){
+            let isTicket = ticket.cid != undefined
+            let isTicketText ='ticket'
+            let cid = ''
+            if(isTicket){
+                isTicketText='comment'
+                cid='#comment'+cid
+            }
+            let subject = `[simpletickets] you were mentioned in a ${isTicketText}`
+            let body = `you were mentioned in a ${isTicketText}:
+from: ${ticket.author} in: ${ticket.nid}
+text:
+${ticket.body}
+go to ${process.env.HOSTADRESS}/ticket/${ticket.nid}${cid}
+            `
+            let email = this.user[u].email
+            console.log(subject,body,email)
+            let resp = sendMail(body, subject, email)
+        }
     }
   },
   search: function(txt, closed, comments){
