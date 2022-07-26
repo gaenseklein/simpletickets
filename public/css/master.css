@@ -129,3 +129,11 @@ input[type="submit"] {
   position: absolute;
   right:3ch;
 }
+
+code {
+    white-space: break-spaces;
+    display: block;
+    background: antiquewhite;
+    padding-left: 1ch;
+    padding-bottom: 0.6em;
+}

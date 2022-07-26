@@ -4,32 +4,86 @@ module.exports = function(original){
   let txt = original
   let start = -1
   let end = -1
-  //titles
-  for(x=1;x<4;x++){
-    let search = '\n'+'######'.substring(0,x)
-    let repbeg = '<h'+(x+2)+'>'
-    let repend = '</h'+(x+2)+'>'
-    start = txt.indexOf(search)
-    end = txt.indexOf('\n',start)
-    while(start>-1 && end>-1){
-      txt = txt.substring(0,start+1)+repbegin+txt.substring(start+x+1,end)+repend+txt.substring(end)
-      start = txt.indexOf(search,end)
-      end = txt.indexOf('\n',start)
+  let middle = -1
+  let lines = original.split('\n')
+  let ignore = false
+  for(let l=0;l<lines.length;l++){
+    let line = lines[l]
+    if(line.substring(0,3)=='```'){
+      if(ignore){
+        lines[l]='</code>'+lines[l].substring(3)
+      }else{
+        lines[l]='<code>'+lines[l].substring(3)
+      }
+      ignore=!ignore
+      continue
     }
+    if(ignore)continue
+    if(line.substring(0,3)=='###')line='<h3>'+line.substring(3)+'</h3>'
+    if(line.substring(0,2)=='##')line='<h2>'+line.substring(2)+'</h2>'
+    if(line[0]=='#')line='<h1>'+line.substring(1)+'</h1>'
+
+    //lists:
+    if(line.substring(0,2)=='- '){
+      let ignoreTill=-1
+      for(x=l;x<lines.length;x++){
+        if(x<ignoreTill)continue
+        if(lines[x].substring(0,2)=='- '){
+          lines[x] = '<li>'+lines[x].substring(2)+'</li>'
+        }else if(lines[x].substring(0,2)=='\t-'){
+            console.log('tabline found');
+            for(let xx=x;xx<lines.length;xx++){
+              if(lines[xx].substring(0,2)=='\t-'){
+                lines[xx] = '<li>'+lines[xx].substring(2)+'</li>'
+              }else{
+                lines[x]='<li><ul>'+lines[x]
+                lines[xx-1]+='</ul></li>'
+                ignoreTill=xx
+                break;
+              }
+            }
+        }else{
+          lines[l]='<ul>'+lines[l]
+          lines[x]+='</ul>'
+          line=lines[l]
+          break;
+        }
+      }
+    }
+    if(lines[l].substring(0,2)=='\t-')console.log('tabline',line)
+    if(line.substring(0,3)=='-- '){
+      console.log('list found');
+      let ignoreTill=-1
+      for(x=l;x<lines.length;x++){
+
+        if(lines[x].substring(0,3)=='-- '){
+          lines[x] = '<li>'+lines[x].substring(3)+'</li>'
+        }else{
+          console.log('tabline?',lines[x])
+          lines[l]='<ul>'+lines[l]
+          lines[x-1]+='</ul>'
+          line=lines[l]
+          break;
+        }
+      }
+    }
+    //links:
+    middle = line.indexOf('](')
+    start = line.lastIndexOf('[',middle)
+    end = line.indexOf(')',middle)
+
+    while(start>-1 && middle >-1 && end >-1){
+      let url = line.substring(middle+2,end)
+      let ltxt = line.substring(start+1,middle)
+      console.log(start,middle,end,url,ltxt);
+      line = line.substring(0,start)+'<a href="'+url+'">'+ltxt+'</a>'+line.substring(end+1)
+      middle = line.indexOf('](',end+11)
+      start = line.lastIndexOf('[',middle)
+      end = line.indexOf(')',middle)
+    }
+    lines[l]=line
   }
-  //links: (images must be above if we want them)
-  middle = txt.indexOf('](')
-  start = txt.lastIndexOf('[',middle)
-  end = txt.indexOf(')',middle)
-  while(start>-1 && middle >-1 && end >-1){
-    let url = txt.substring(middle+2,end)
-    let ltxt = txt.substring(start+1,middle)
-    txt = txt.substring(0,start)+'<a href="'+url+'">'+ltxt+'</a>'+txt.substring(end+1)
-    middle = txt.indexOf('](',end)
-    start = txt.lastIndexOf('[',middle)
-    end = txt.indexOf(')',middle)
-  }
-  //lists:
+  txt = lines.join('\n')
   //inline **
   return txt
 }

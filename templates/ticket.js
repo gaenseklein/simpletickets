@@ -2,7 +2,7 @@
 const simplemd = require('../simplemd.js')
 
 module.exports = function(data){
-  console.log(data.ticket)
+  console.log('show ticket',data.ticket)
   let ticketnid = data.ticket.nid
   let title = data.ticket.title
   let name = data.ticket.author
@@ -14,7 +14,9 @@ module.exports = function(data){
     tags = data.ticket.tags.join(' , ')
     tagvaluestring=data.ticket.tags.join(', ')
   }
+  // console.log('simplemd start');
   let body = simplemd(data.ticket.body)
+  // console.log('simplemd finished');
   let x = 0
   let images = ''
   if(data.ticket.images)for(x=0;x<data.ticket.images.length;x++){
@@ -33,7 +35,7 @@ module.exports = function(data){
     let ctitle = data.comments[x].title
     let cname = data.comments[x].author
     let cpubdate = new Date(data.comments[x].pubdate).toLocaleString('de')
-    let cbody = data.comments[x].body
+    let cbody = simplemd(data.comments[x].body)
     let cimages = ''
     if(data.comments[x].images)for(let cx=0;cx<data.comments[x].images.length;cx++)cimages+=`<img src="/${data.comments[x].images[cx]}">`
     let cfiles = ''
