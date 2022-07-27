@@ -7,6 +7,7 @@ module.exports = function(original){
   let middle = -1
   let lines = original.split('\n')
   let ignore = false
+  let nobreaklines = []
   for(let l=0;l<lines.length;l++){
     let line = lines[l]
     if(line.substring(0,3)=='```'){
@@ -19,6 +20,8 @@ module.exports = function(original){
       continue
     }
     if(ignore)continue
+
+    if(line[0]=='#')nobreaklines[l]=true
     if(line.substring(0,3)=='###')line='<h3>'+line.substring(3)+'</h3>'
     if(line.substring(0,2)=='##')line='<h2>'+line.substring(2)+'</h2>'
     if(line[0]=='#')line='<h1>'+line.substring(1)+'</h1>'
@@ -30,11 +33,13 @@ module.exports = function(original){
         if(x<ignoreTill)continue
         if(lines[x].substring(0,2)=='- '){
           lines[x] = '<li>'+lines[x].substring(2)+'</li>'
+          nobreaklines[x]=true
         }else if(lines[x].substring(0,2)=='\t-'){
             console.log('tabline found');
             for(let xx=x;xx<lines.length;xx++){
               if(lines[xx].substring(0,2)=='\t-'){
                 lines[xx] = '<li>'+lines[xx].substring(2)+'</li>'
+                nobreaklines[xx]=true
               }else{
                 lines[x]='<li><ul>'+lines[x]
                 lines[xx-1]+='</ul></li>'
@@ -44,7 +49,7 @@ module.exports = function(original){
             }
         }else{
           lines[l]='<ul>'+lines[l]
-          lines[x]+='</ul>'
+          lines[x-1]+='</ul>'
           line=lines[l]
           break;
         }
@@ -83,6 +88,7 @@ module.exports = function(original){
     }
     lines[l]=line
   }
+  for(x=0;x<lines.length;x++)if(!nobreaklines[x])lines[x]+='<br>'
   txt = lines.join('\n')
   //inline **
   return txt
