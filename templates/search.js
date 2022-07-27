@@ -82,33 +82,33 @@ module.exports = function(data){
       <h2>Offene Tickets</h2>
       <ul class="ticketlist" id="opentickets">
       <li class="listtitle">
-        <div class="nid clickable" onclick="ticketman.sort('nid',true)">
+        <div class="nid clickable" onclick="ticketman.multisort('nid',true,'opentickets')">
           ticketnummer
         </div>
-        <div class="title clickable" onclick="ticketman.sort('title')">
+        <div class="title clickable" onclick="ticketman.multisort('title',false,'opentickets')">
           titel
         </div>
         <div class="tags clickable">
           <div onclick="tagfilter.classList.toggle('open')">tags</div>
           <div id="tagfilter">
-          <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
-          <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+          <label for="openticketstagfilterinclude">must have</label><input id="openticketstagfilterinclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
+          <label for="openticketstagfilterexclude">exclude</label><input id="openticketstagfilterexclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
           </div>
         </div>
         <div class="related">
           zugehöriges ticket
         </div>
-        <div class="pubdate clickable" onclick="ticketman.sort('pubdate',true)">
+        <div class="pubdate clickable" onclick="ticketman.multisort('pubdate',true,'opentickets')">
           Veröffentlicht
         </div>
-        <div class="change clickable" onclick="ticketman.sort('pubdate',true)">
+        <div class="change clickable" onclick="ticketman.multisort('pubdate',true,'opentickets')">
           Änderung
-          <div id="sortshow" class="down">
+          <div id="openticketssortshow" class="down">
             <span>⌃</span>
             <span>⌄</span>
           </div>
         </div>
-        <div class="commentcount clickable" onclick="ticketman.sort('commentcount',true)">
+        <div class="commentcount clickable" onclick="ticketman.multisort('commentcount',true,'opentickets')">
           Beiträge
         </div>
         <div class="lastcommented">
@@ -120,33 +120,33 @@ module.exports = function(data){
       <h2>Geschlossene Tickets</h2>
       <ul class="ticketlist" id=closedtickets>
       <li class="listtitle">
-        <div class="nid clickable" onclick="ticketman.sort('nid',true)">
+        <div class="nid clickable" onclick="ticketman.multisort('nid',true,'closedtickets')">
           ticketnummer
         </div>
-        <div class="title clickable" onclick="ticketman.sort('title')">
+        <div class="title clickable" onclick="ticketman.multisort('title', false,'closedtickets')">
           titel
         </div>
         <div class="tags clickable">
           <div onclick="tagfilter.classList.toggle('open')">tags</div>
-          <div id="tagfilter">
-          <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
-          <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+          <div id="tagfilterclosed">
+          <label for="closedticketstagfilterinclude">must have</label><input id="closedticketstagfilterinclude" type="text" onkeyup="ticketman.multifilterTags('closedtickets')">
+          <label for="closedticketstagfilterexclude">exclude</label><input id="closedticketstagfilterexclude" type="text" onkeyup="ticketman.multifilterTags('closedtickets')">
           </div>
         </div>
         <div class="related">
           zugehöriges ticket
         </div>
-        <div class="pubdate clickable" onclick="ticketman.sort('pubdate',true)">
+        <div class="pubdate clickable" onclick="ticketman.multisort('pubdate',true,'closedtickets')">
           Veröffentlicht
         </div>
-        <div class="change clickable" onclick="ticketman.sort('pubdate',true)">
+        <div class="change clickable" onclick="ticketman.multisort('pubdate',true,'closedtickets')">
           Änderung
-          <div id="sortshow" class="down">
+          <div id="closedticketssortshow" class="down">
             <span>⌃</span>
             <span>⌄</span>
           </div>
         </div>
-        <div class="commentcount clickable" onclick="ticketman.sort('commentcount',true)">
+        <div class="commentcount clickable" onclick="ticketman.multisort('commentcount',true,'closedtickets')">
           Beiträge
         </div>
         <div class="lastcommented">
@@ -155,7 +155,7 @@ module.exports = function(data){
       </li>
         ${listclosed}
       </ul>
-      <script src="/public/listsort.js"></script>
+      <script src="/public/multilistsort.js"></script>
     </body>
   </html>
 `

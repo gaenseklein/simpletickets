@@ -185,7 +185,7 @@ router.get('/search', async (req,res)=>{
 router.post('/search', async (req,res)=>{
       try{
         console.log('search',req.body.search);
-        let data = simpletickets.search(req.body.search, true)
+        let data = simpletickets.search(req.body.search, true, true)
         data.searchdata = req.body.search
         let result = templates.buildPage('search',data)
         res.send(result)

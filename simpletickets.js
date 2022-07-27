@@ -567,12 +567,15 @@ go to ${process.env.HOSTADRESS}/ticket/${ticket.nid}${cid}
   search: function(txt, closed, comments){
     console.log('search for',txt);
     let result = []
+    let foundnids = []
     let x=0
     for(x=0;x<this.tickets.length;x++){
       if(this.tickets[x].body.indexOf(txt)>-1 ||
         this.tickets[x].title.indexOf(txt)>-1 ||
-        (this.tickets[x].tag && this.tickets[x].tag.indexOf(txt)>-1))
-      result.push(this.tickets[x])
+        (this.tickets[x].tag && this.tickets[x].tag.indexOf(txt)>-1)){
+          result.push(this.tickets[x])
+          foundnids.push(this.tickets[x].nid)
+        }
 
     }
     console.log('found',result.length,'open tickets');
@@ -582,11 +585,45 @@ go to ${process.env.HOSTADRESS}/ticket/${ticket.nid}${cid}
       for(x=0;x<this.closedtickets.length;x++){
         if(this.closedtickets[x].body.indexOf(txt)>-1 ||
           this.closedtickets[x].title.indexOf(txt)>-1 ||
-          (this.closedtickets[x].tag && this.closedtickets[x].tag.indexOf(txt)>-1))          
-          result.push(this.closedtickets[x])
+          (this.closedtickets[x].tag && this.closedtickets[x].tag.indexOf(txt)>-1)){
+            result.push(this.closedtickets[x])
+            foundnids.push(this.closedtickets[x].nid)
+          }
       }
       resl=result.length-resl
       console.log('found '+resl+' closed tickets')
+    }
+    if(comments){
+      let allfiles = fs.readdirSync('./tickets')
+      let allcomments = []
+      for(x=0;x<allfiles.length;x++){
+        if(allfiles[x].indexOf('comments.')>-1){
+          let cnid = allfiles[x].substring('comments.'.length)
+          cnid=cnid.substring(0,cnid.indexOf('.'))
+          cnid=cnid*1
+          if(foundnids.indexOf(cnid)>-1){
+            console.log('nid is already found',cnid);
+            continue
+          }
+          allcomments.push(allfiles[x])
+        }
+      }
+      console.log(allcomments.length,'to check')
+      let commentnids = []
+      let path = './tickets/'
+      for(x=0;x<allcomments.length;x++){
+        let comtext = fs.readFileSync(path+allcomments[x],'utf-8')
+        if(comtext.indexOf(txt)>-1){
+          let cnid = allcomments[x].substring('comments.'.length)
+          cnid=cnid.substring(0,cnid.indexOf('.'))
+          cnid=cnid*1
+          commentnids.push(cnid)
+        }
+      }
+      console.log('found',txt,'in comments from',commentnids.length,'nids:',commentnids)
+      for(x=0;x<commentnids.length;x++){
+          result.push(this.getTicket(commentnids[x],false))
+      }
     }
     return result
   },

@@ -72,13 +72,17 @@ module.exports = function(data){
     </head>
     <body>
       <h1>Tickets</h1>
+      <div class="smallheader">
+      <span class="ticketspan">
       <a href="/ticket/add">Neues Ticket hinzufügen</a>
       <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
       <a href="/ticket/search">Ticket suchen</a>
+      </span>
       <span class="userspan">
       <a href="/user">User ändern</a>
       <a class="logoutlink" href="/login/logout">Log out</a>
       </span>
+      </div>
       <h2>${offene} Tickets</h2>
       <ul class="ticketlist">
       <li class="listtitle">

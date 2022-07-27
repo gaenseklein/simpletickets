@@ -55,15 +55,21 @@ input[type="submit"] {
     margin-top: 2em;
     font-size: xx-large;
 }
-#sortshow.down span:first-child {
+#sortshow.down span:first-child,
+#openticketssortshow.down span:first-child,
+#closedticketssortshow.down span:first-child  {
     display: none;
 }
 
-#sortshow.up span:last-child {
+#sortshow.up span:last-child,
+#openticketssortshow.up span:last-child,
+#closedticketssortshow.up span:last-child {
     display: none;
 }
 
-#sortshow {
+#sortshow,
+#openticketssortshow,
+#closedticketssortshow {
     display: inline-block;
 }
 .clickable{
@@ -125,9 +131,12 @@ input[type="submit"] {
     border: 4px solid;
     padding: 1em;
 }
+.smallheader {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
 .userspan{
-  position: absolute;
-  right:3ch;
+  text-align: right;
 }
 
 code {
