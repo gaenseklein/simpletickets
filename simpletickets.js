@@ -255,7 +255,7 @@ var simpletickets = {
         smalltext: ['title'],
         bigtext: ['body'],
         files: ['files','images'],
-        obligatorio: ['title','uid','nid','body']
+        obligatorio: ['uid','nid','body']
       }
       return this.createSaveObject(comment, fields)
   },
@@ -371,6 +371,7 @@ var simpletickets = {
     this.tickets[ind].last_change = Date.now()
     this.tickets[ind].last_comment_uid = comment.uid
     this.tickets[ind].last_comment_author = this.getUser(comment.uid).name
+    this.tickets[ind].comment_count = obj.comments.length
     this.saveTicketsToFS()
     this.checkForMention(comment)
     return comment
