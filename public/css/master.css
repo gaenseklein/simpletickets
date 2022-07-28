@@ -146,3 +146,8 @@ code {
     padding-left: 1ch;
     padding-bottom: 0.6em;
 }
+.login form,
+.userpage form {
+    display: grid;
+    grid-gap: 1em;
+}

@@ -1,13 +1,18 @@
 // const simpletickets = require('simpletickets.js')
 const simplemd = require('../simplemd.js')
+const multilang = require('./lang.js')
 
 module.exports = function(data){
+  let lan = process.env.IDIOMA || 'de'
+  console.log(process.env.IDIOMA, lan)
+  let lang = multilang[lan]
+
   console.log('show ticket',data.ticket)
   let ticketnid = data.ticket.nid
   let title = data.ticket.title
   let name = data.ticket.author
   let pdate = new Date(data.ticket.pubdate)
-  let pubdate = pdate.toLocaleString('de') + " Uhr"
+  let pubdate = lang.timestring(pdate)//pdate.toLocaleString('de') + " Uhr"
   let tags = ''
   let tagvaluestring = ''
   if(data.ticket.tags){
@@ -34,7 +39,7 @@ module.exports = function(data){
   if(data.comments)for(x=0;x<data.comments.length;x++){
     let ctitle = data.comments[x].title
     let cname = data.comments[x].author
-    let cpubdate = new Date(data.comments[x].pubdate).toLocaleString('de')
+    let cpubdate = lang.timestring(new Date(data.comments[x].pubdate))//.toLocaleString('de')
     let cbody = simplemd(data.comments[x].body)
     let cimages = ''
     if(data.comments[x].images)for(let cx=0;cx<data.comments[x].images.length;cx++)cimages+=`<img src="/${data.comments[x].images[cx]}">`
@@ -50,24 +55,24 @@ module.exports = function(data){
       ccss+=' depth depth'+data.comments[x].depth
       cdepth = data.comments[x].depth
     }
-    commentlist+=`<li id="commentli${data.comments[x].cid}" class="comment${ccss}">
+    commentlist+=`<li id="comment${data.comments[x].cid}" class="comment${ccss}">
       <h3>${ctitle}</h3>
       <div class="submitted">
-        von: ${cname} am: ${cpubdate}
+        ${lang.from}: ${cname} ${lang.on}: ${cpubdate}
       </div>
       <div class="body">
         ${cbody}
       </div>
       <div class="images">
-        <h4>bilder:</h4>
+        <h4>${lang.images}:</h4>
         ${cimages}
       </div>
       <div class="files">
-        <h4>dateien:</h4>
+        <h4>${lang.files}:</h4>
         ${cfiles}
       </div>
       <div class="reply">
-        <button onclick="moveCommentForm(${data.comments[x].cid},${cdepth})">hier antworten</button>
+        <button onclick="moveCommentForm(${data.comments[x].cid},${cdepth})">${lang.reply}</button>
       </div>
     </li>`
   }
@@ -79,11 +84,11 @@ module.exports = function(data){
     <input type="hidden" id="commentdepth" name="depth" value="0">
     <input type="hidden" id="commentparent" name="parent">
     <div>
-    <label for="commenttitle">title</label>
+    <label for="commenttitle">${lang.title}</label>
     <input id="commenttitle" type="text" name="title" value="">
     </div>
     <textarea name="body" rows="8" cols="80"></textarea>
-    <h3>bilder und dateien hinzufügen</h3>
+    <h3>${lang.add_files}</h3>
     <div class="fileuploadwrapper">
       <input type="file" name="file0" value="">
       <input type="file" name="file1" value="">
@@ -96,43 +101,43 @@ module.exports = function(data){
       <input type="file" name="file8" value="">
       <input type="file" name="file9" value="">
     </div>
-    <input type="submit" value="abschicken">
+    <input type="submit" value="${lang.submit}">
   </form>`
   let closedheader = ''
   let disabled=''
   let closeoropen = 'close'
-  let closeoropentxt= 'close'
+  let closeoropentxt= lang.close_ticket
   if(data.ticket.closed){
-    closedheader=`<div class="closedwarning">ticket is closed</div>`
+    closedheader=`<div class="closedwarning">${lang.ticket_is_closed}</div>`
     disabled = 'disabled'
     form = closedheader
     closeoropen = 'reopen'
-    closeoropentxt = 'open'
+    closeoropentxt = lang.reopen_ticket
   }
   let actiontools = `<div class="actiontools">
     ${related}
-    <button class="edittagbutton" type="button" name="button" ${disabled} onclick="tageditwrapper.classList.toggle('show',true)">edit tags</button>
-    <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">add new comment</a>
-    <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt} this ticket</a>
+    <button class="edittagbutton" type="button" name="button" ${disabled} onclick="tageditwrapper.classList.toggle('show',true)">${lang.change_tags}</button>
+    <a class="goto" href="#commentform" onclick="commentdownwrapper.appendChild(commentform)">${lang.add_comment}</a>
+    <a class="closebutton" href="/ticket/${closeoropen}/${ticketnid}">${closeoropentxt}</a>
   </div>`
   let actiontools2 = ''
   if(data.comments)actiontools2 = actiontools
   let raw = `<!DOCTYPE html>
-  <html lang="de" dir="ltr">
+  <html lang="${lan}" dir="ltr">
     <head>
       <meta charset="utf-8">
-      <title>Ticket #${ticketnid}</title>
+      <title>${lang.ticket} #${ticketnid}</title>
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
       <div class="header">
       <span class="ticketnr">#${ticketnid}</span> |
-      <a href="/ticket/all"> ← zurück zur Übersicht</a>
+      <a href="/ticket/all"> ← ${lang.back_to_overview}</a>
       </div>
       ${closedheader}
       <h1><span class="title">${title}</span></h1>
       <div class="submitted">
-        von: ${name} am: ${pubdate}
+        ${lang.from} ${name} ${lang.on}: ${pubdate}
       </div>
       <div class="tagswrapper">
         <div class="tags">
@@ -141,11 +146,11 @@ module.exports = function(data){
         <button class="edittagbutton" type="button" name="button" ${disabled} onclick="tageditwrapper.classList.toggle('show',true)">edit tags</button>
         <div id="tageditwrapper">
           <div class="innerwrapper">
-            <h2>change tags</h2>
+            <h2>${lang.change_tags}</h2>
             <form id="tagform" class="" action="/ticket/tag/${ticketnid}" method="post">
               <input type="text" name="tags" value="${tagvaluestring}">
-              <button type="button" onclick="tagform.submit()">change tags</button>
-              <button type="button" onclick="tageditwrapper.classList.toggle('show',false)">cancel</button>
+              <button type="button" onclick="tagform.submit()">${lang.change_tags}</button>
+              <button type="button" onclick="tageditwrapper.classList.toggle('show',false)">${lang.cancel}</button>
             </form>
           </div>
         </div>
@@ -153,23 +158,23 @@ module.exports = function(data){
       <div class="body">
         ${body}
       </div>
-      <h2>Ticketbilder</h2>
+      <h2>${lang.images}</h2>
       <div class="imageswrapper">
         ${images}
       </div>
-      <h2>Dateien</h2>
+      <h2>${lang.files}</h2>
       <div class="fileswrapper">
         ${files}
       </div>
       <!-- action tools here? i did not like it that way -->
       ${actiontools}
-      <h2>Kommentare</h2>
+      <h2>${lang.comments}</h2>
       <ul class="commentlist">
         ${commentlist}
       </ul>
       ${actiontools2}
       <div id="commentdownwrapper">
-      <h2>Kommentar hinzufügen</h2>
+      <h2>${lang.add_comment}</h2>
       ${form}
       </div>
       <script>

@@ -3,6 +3,7 @@ const raw = {
   ticket: require('./templates/ticket.js'),
   list: require('./templates/list.js'),
   search: require('./templates/search.js'),
+  frontpage: require('./templates/frontpage.js'),
   form:{
     login: require('./templates/forms/login.js'),
     ticket: require('./templates/forms/ticket.js'),

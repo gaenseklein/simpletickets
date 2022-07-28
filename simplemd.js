@@ -19,7 +19,10 @@ module.exports = function(original){
       ignore=!ignore
       continue
     }
-    if(ignore)continue
+    if(ignore){
+      nobreaklines[l]=true
+      continue
+    }
 
     if(line[0]=='#')nobreaklines[l]=true
     if(line.substring(0,3)=='###')line='<h3>'+line.substring(3)+'</h3>'

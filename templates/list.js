@@ -1,16 +1,21 @@
 // const simpletickets = require('simpletickets.js')
 
+const multilang = require('./lang.js')
+
 module.exports = function(data){
+  let lan = process.env.IDIOMA || 'de'
+  console.log(process.env.IDIOMA, lan)
+  let lang = multilang[lan]
   let list = ''
   for(let x=0;x<data.length;x++){
     let pubdate = new Date(data[x].pubdate)
-    let pdate = pubdate.toLocaleString('de')
+    let pdate = lang.timestring(pubdate)//pubdate.toLocaleString('de')
     pubdate = pubdate.getTime()
     let updated = ''
     let last_change = pubdate
     if(data[x].last_change){
       last_change = new Date(data[x].last_change)
-      updated = last_change.toLocaleString('de') + ' Uhr'
+      updated = lang.timestring(last_change) //.toLocaleString('de') + ' Uhr'
       last_change = last_change.getTime()
     }
     let lastauthor = ''
@@ -42,7 +47,7 @@ module.exports = function(data){
             ${rellink}
           </div>
           <div class="pubdate">
-            ${pdate} Uhr
+            ${pdate}
           </div>
           <div class="change">
             ${updated}
@@ -55,68 +60,68 @@ module.exports = function(data){
           </div>
         </li>`
   }
-  let offene = 'Offene'
+  let offene = lang.open_tickets
   let closedlink='closed'
-  let closedlinktxt = 'geschlossene'
+  let closedlinktxt = lang.list_closed_tickets
   if(data.closed){
-    offene = 'Geschlossene'
+    offene = lang.closed_tickets
     closedlink = 'all'
-    closedlinktxt = 'offene'
+    closedlinktxt = lang.list_open_tickets
   }
   let raw = `<!DOCTYPE html>
-  <html lang="de" dir="ltr">
+  <html lang="${lan}" dir="ltr">
     <head>
       <meta charset="utf-8">
-      <title>${offene} Tickets</title>
+      <title>${offene}</title>
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
       <h1>Tickets</h1>
       <div class="smallheader">
       <span class="ticketspan">
-      <a href="/ticket/add">Neues Ticket hinzufügen</a>
-      <a href="/ticket/${closedlink}">${closedlinktxt} Tickets auflisten</a>
-      <a href="/ticket/search">Ticket suchen</a>
+      <a href="/ticket/add">${lang.add_new_ticket}</a>
+      <a href="/ticket/${closedlink}">${closedlinktxt}</a>
+      <a href="/ticket/search">${lang.search_ticket}</a>
       </span>
       <span class="userspan">
-      <a href="/user">User ändern</a>
-      <a class="logoutlink" href="/login/logout">Log out</a>
+      <a href="/user">${lang.change_user}</a>
+      <a class="logoutlink" href="/login/logout">${lang.log_out}</a>
       </span>
       </div>
-      <h2>${offene} Tickets</h2>
+      <h2>${offene}</h2>
       <ul class="ticketlist">
       <li class="listtitle">
         <div class="nid clickable" onclick="ticketman.sort('nid',true)">
-          ticketnummer
+          ${lang.ticket_number}
         </div>
         <div class="title clickable" onclick="ticketman.sort('title')">
-          titel
+          ${lang.title}
         </div>
         <div class="tags clickable">
-          <div onclick="tagfilter.classList.toggle('open')">tags</div>
+          <div onclick="tagfilter.classList.toggle('open')">${lang.tags}</div>
           <div id="tagfilter">
-          <label for="tagfilterinclude">must have</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
-          <label for="tagfilterinclude">exclude</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
+          <label for="tagfilterinclude">${lang.include}</label><input id="tagfilterinclude" type="text" onkeyup="ticketman.filterTags()">
+          <label for="tagfilterinclude">${lang.exclude}</label><input id="tagfilterexclude" type="text" onkeyup="ticketman.filterTags()">
           </div>
         </div>
         <div class="related">
-          zugehöriges ticket
+          ${lang.related_ticket}
         </div>
         <div class="pubdate clickable" onclick="ticketman.sort('pubdate',true)">
-          Veröffentlicht
+          ${lang.published}
         </div>
         <div class="change clickable" onclick="ticketman.sort('pubdate',true)">
-          Änderung
+          ${lang.changed}
           <div id="sortshow" class="down">
             <span>⌃</span>
             <span>⌄</span>
           </div>
         </div>
         <div class="commentcount clickable" onclick="ticketman.sort('commentcount',true)">
-          Beiträge
+          ${lang.comments}
         </div>
         <div class="lastcommented">
-          Letzter Beitrag
+          ${lang.last_comment}
         </div>
       </li>
         ${list}

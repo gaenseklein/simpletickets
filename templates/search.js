@@ -1,18 +1,21 @@
 // const simpletickets = require('simpletickets.js')
-
+const multilang = require('./lang.js')
 module.exports = function(data){
+  let lan = process.env.IDIOMA || 'de'
+  console.log(process.env.IDIOMA, lan)
+  let lang = multilang[lan]
   let list = ''
   let listclosed = ''
   let searchdata = data.searchdata || ''
   for(let x=0;x<data.length;x++){
     let pubdate = new Date(data[x].pubdate)
-    let pdate = pubdate.toLocaleString('de')
+    let pdate = lang.timestring(pubdate)//pubdate.toLocaleString('de')
     pubdate = pubdate.getTime()
     let updated = ''
     let last_change = pubdate
     if(data[x].last_change){
       last_change = new Date(data[x].last_change)
-      updated = last_change.toLocaleString('de') + ' Uhr'
+      updated = lang.timestring(last_change)//last_change.toLocaleString('de') + ' Uhr'
       last_change = last_change.getTime()
     }
     let lastauthor = ''
@@ -61,70 +64,70 @@ module.exports = function(data){
   }
 
   let raw = `<!DOCTYPE html>
-  <html lang="de" dir="ltr">
+  <html lang="${lan}" dir="ltr">
     <head>
       <meta charset="utf-8">
-      <title>Ticketsuche</title>
+      <title>${lang.search_ticket}</title>
       <link rel="stylesheet" href="/public/css/master.css">
     </head>
     <body>
-      <h1>Ticketsuche</h1>
+      <h1>${lang.search_ticket}</h1>
       <div class="header">
-      <span class="ticketnr">#search</span> |
-      <a href="/ticket/all"> ← zurück zur Übersicht</a>
+      <span class="ticketnr">#${lang.search_ticket}</span> |
+      <a href="/ticket/all"> ← ${lang.back_to_overview}</a>
       </div>
       <div id="searchwrapper">
         <form class="" action="/ticket/search" method="post">
           <input type="text" name="search" value="${searchdata}">
-          <input type="submit" value="suchen">
+          <input type="submit" value="${lang.search}">
         </form>
       </div>
-      <h2>Offene Tickets</h2>
+      <h2>${lang.open_tickets}</h2>
       <ul class="ticketlist" id="opentickets">
       <li class="listtitle">
         <div class="nid clickable" onclick="ticketman.multisort('nid',true,'opentickets')">
-          ticketnummer
+          ${lang.ticket_number}
         </div>
         <div class="title clickable" onclick="ticketman.multisort('title',false,'opentickets')">
-          titel
+          ${lang.title}
         </div>
         <div class="tags clickable">
-          <div onclick="tagfilter.classList.toggle('open')">tags</div>
+          <div onclick="tagfilter.classList.toggle('open')">${lang.tags}</div>
           <div id="tagfilter">
-          <label for="openticketstagfilterinclude">must have</label><input id="openticketstagfilterinclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
-          <label for="openticketstagfilterexclude">exclude</label><input id="openticketstagfilterexclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
+          <label for="openticketstagfilterinclude">${lang.include}</label><input id="openticketstagfilterinclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
+          <label for="openticketstagfilterexclude">${lang.exclude}</label><input id="openticketstagfilterexclude" type="text" onkeyup="ticketman.multifilterTags('opentickets')">
           </div>
         </div>
         <div class="related">
-          zugehöriges ticket
+          ${lang.related_ticket}
         </div>
         <div class="pubdate clickable" onclick="ticketman.multisort('pubdate',true,'opentickets')">
-          Veröffentlicht
+          ${lang.published}
         </div>
         <div class="change clickable" onclick="ticketman.multisort('pubdate',true,'opentickets')">
-          Änderung
+          ${lang.changed}
           <div id="openticketssortshow" class="down">
             <span>⌃</span>
             <span>⌄</span>
           </div>
         </div>
         <div class="commentcount clickable" onclick="ticketman.multisort('commentcount',true,'opentickets')">
-          Beiträge
+          ${lang.comments}
         </div>
         <div class="lastcommented">
-          Letzter Beitrag
+          ${lang.last_comment}
         </div>
       </li>
         ${list}
       </ul>
-      <h2>Geschlossene Tickets</h2>
+      <h2>${lang.closed_tickets}</h2>
       <ul class="ticketlist" id=closedtickets>
       <li class="listtitle">
         <div class="nid clickable" onclick="ticketman.multisort('nid',true,'closedtickets')">
-          ticketnummer
+          ${lang.ticket_number}
         </div>
         <div class="title clickable" onclick="ticketman.multisort('title', false,'closedtickets')">
-          titel
+          ${lang.title}
         </div>
         <div class="tags clickable">
           <div onclick="tagfilter.classList.toggle('open')">tags</div>
@@ -134,23 +137,23 @@ module.exports = function(data){
           </div>
         </div>
         <div class="related">
-          zugehöriges ticket
+          ${lang.related_ticket}
         </div>
         <div class="pubdate clickable" onclick="ticketman.multisort('pubdate',true,'closedtickets')">
-          Veröffentlicht
+          ${lang.published}
         </div>
         <div class="change clickable" onclick="ticketman.multisort('pubdate',true,'closedtickets')">
-          Änderung
+          ${lang.changed}
           <div id="closedticketssortshow" class="down">
             <span>⌃</span>
             <span>⌄</span>
           </div>
         </div>
         <div class="commentcount clickable" onclick="ticketman.multisort('commentcount',true,'closedtickets')">
-          Beiträge
+          ${lang.comments}
         </div>
         <div class="lastcommented">
-          Letzter Beitrag
+          ${lang.last_comment}
         </div>
       </li>
         ${listclosed}
